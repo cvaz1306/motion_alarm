@@ -1,8 +1,6 @@
 import cv2
 import numpy as np
-
 from pyvda import VirtualDesktop
-
 
 # Initialize video capture with the device (use 1 if it's the secondary camera)
 cap = cv2.VideoCapture(1)
@@ -14,8 +12,9 @@ MOTION_THRESHOLD = 10000  # Adjust this based on your needs
 ret, prev_frame = cap.read()
 prev_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
 i = 0
+
 while True:
-    i = i + 1
+    i += 1
     # Capture the next frame
     ret, frame = cap.read()
     if not ret:
@@ -37,7 +36,7 @@ while True:
     motion_area = sum(cv2.contourArea(c) for c in contours)
 
     # Check if the motion exceeds the defined threshold
-    if motion_area > MOTION_THRESHOLD and i>100:
+    if motion_area > MOTION_THRESHOLD and i > 100:
         print("Motion detected! Area:", motion_area)
         # Switch to the next desktop (wrapping around if at the last one)
         try:
@@ -52,10 +51,6 @@ while True:
             except:
                 print("We tried")
 
-    # Display the frames for debugging (optional)
-    cv2.imshow("Frame", frame)
-    cv2.imshow("Thresh", thresh)
-
     # Update the previous frame
     prev_gray = gray
 
@@ -63,6 +58,5 @@ while True:
     if cv2.waitKey(10) & 0xFF == ord('q'):
         break
 
-# Release the capture and close any open windows
+# Release the capture
 cap.release()
-cv2.destroyAllWindows()
