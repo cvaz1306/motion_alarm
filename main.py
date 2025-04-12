@@ -100,17 +100,16 @@ def load_masks(camera_ids, mask_paths, caps):
     return masks
 
 
-def switch_virtual_desktop():
+def trigger_alarm():
     try:
         if mqtt_client and MQTT_TOPIC:
             mqtt_client.publish(MQTT_TOPIC, payload="tripped", qos=1, retain=False)
             logging.info(f"MQTT event published to topic '{MQTT_TOPIC}': 'tripped'")
         else:
-            logging.info("MQTT client or topic not specified. Skipping MQTT notification.")
-        target_desktop = VirtualDesktop(number=1)
-        target_desktop.go()
+            logging.info("MQTT client or topic not specified. Taking no action.")
+
     except Exception as e:
-        logging.error(f"Failed to switch virtual desktops or notify MQTT broker: {e}")
+        logging.error(f"Failed to notify MQTT broker: {e}")
 
 
 def process_motion_detection(caps, prev_frames, motion_threshold, reactivation_time, grace_frames, masks):
@@ -147,7 +146,7 @@ def process_motion_detection(caps, prev_frames, motion_threshold, reactivation_t
             logging.debug(f"Camera {cam_id}: Detected motion area {motion_area}")
             if motion_area > motion_threshold:
                 logging.info(f"Motion detected on Camera {cam_id}! Area: {motion_area}")
-                switch_virtual_desktop()
+                trigger_alarm()
                 logging.info(f"Disabling Camera {cam_id} temporarily.")
                 cap.release()
                 del caps[cam_id]
