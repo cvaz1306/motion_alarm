@@ -22,6 +22,8 @@ def parse_args():
     parser.add_argument('--mqtt-port', type=int, default=None, help='MQTT broker port.')
     parser.add_argument('--mqtt-topic', type=str, default=None, help='MQTT topic to publish events.')
     parser.add_argument('--mqtt-client-id', type=str, default="motion_detector", help='MQTT client ID.')
+    parser.add_argument('--mqtt-username', type=str, default=None, help='MQTT username for authentication.')
+    parser.add_argument('--mqtt-password', type=str, default=None, help='MQTT password for authentication.')
     return parser.parse_args()
 
 
@@ -36,6 +38,8 @@ MQTT_CLIENT_ID = args.mqtt_client_id
 mqtt_client = None
 if MQTT_BROKER and MQTT_PORT and MQTT_TOPIC:
     mqtt_client = mqtt.Client(client_id=MQTT_CLIENT_ID)
+    if args.mqtt_username and args.mqtt_password:
+        mqtt_client.username_pw_set(args.mqtt_username, args.mqtt_password)
     mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
     mqtt_client.loop_start()
 
